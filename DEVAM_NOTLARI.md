@@ -14,6 +14,18 @@ Bu dosya, projeyi başka bir sohbette/hesapta sürdürecek kişi (veya yapay zek
 - Canlı oyun: https://cemyurtlak.github.io/spherex-gokyuzu-dedektifi/ (GitHub Pages, main dalı, kök klasör)
 - Güncelleme: değişen dosyaları depoya yükle (aynı klasör yolunda); Pages birkaç dakika içinde yeniden yayınlar. Yerel klasör ile depo aynı tutulmalı.
 
+## Dil desteği (Aşama 4)
+- Arayüz metinleri `js/i18n.js` → `SX.METIN.tr / .en`; kodda `SX.t('anahtar', {param})` kullanılır. HTML'de `data-i18n`, `data-i18n-title`, `data-rar` öznitelikleri.
+- Oyun içeriğinin İngilizcesi `js/data_en.js` (`SX.EN`). Anahtarlar `data.js` ile aynı (cisim kimliği, seviye no, hikâye sahnesi + satır sırası). Türkçe orijinal ilk yüklemede `SX._TR`'ye yedeklenir; `SX.veriDiliUygula()` seçilen dile göre veri nesnelerini günceller.
+- **Kural:** `data.js`'e yeni metin/seviye/cisim eklenirse aynısı `data_en.js`'e de eklenmeli; yeni arayüz metni `i18n.js`'in iki diline birden eklenmeli. Kodda sabit Türkçe metin yazılmamalı.
+- Dil yalnızca ana menü ve görev haritasından değiştirilir (oyun sırasında değil).
+
+## Sunumlar (Aşama 4)
+- Space Apps demo kuralı: en fazla 7 slayt (başlık dâhil), İngilizce, herkese açık bağlantı; takım adı, üyeler, görev, NASA verisinin kullanımı, yapay zekâ beyanı zorunlu. 7'yi aşan demo Global Judging'e giremez.
+- Sunumlar pptxgenjs ile üretildi (koyu uzay teması, Calibri). Oyun ekran görüntülerinde "AI-assisted / Yapay zekâ destekli" filigranı var (Space Apps yapay zekâ kuralı). NASA logosu kullanılmadı.
+- "[Takım üyelerinin adları]" yer tutucusu takım tarafından doldurulacak. 18 yaş altı üyeler için Space Apps kullanıcı adları tercih edilebilir.
+- Oyun yeniden düzenlenirse ekran görüntüleri güncel olmayabilir.
+
 ## Teknik kararlar ve nedenleri
 - **Klasik `<script>` + Three.js r149 UMD (`vendor/three.min.js`)**: `index.html` çift tıklanarak (file://) açılabilsin diye. ES modülleri file:// altında CORS hatası verir. r150+ sürümlerinde `three.min.js` kaldırıldığı için r149 seçildi. Bu yüzden `import` kullanılmaz; tüm modüller `window.SX` ad alanını paylaşır.
 - **İnternetsiz çalışma**: Three.js yerelde. Ses dosyası yok (WebAudio ile sentez). Dokular (Dünya, gezegenler, ikonlar) kodla üretiliyor. Sadece Google Fonts internete bağlı; yoksa sistem yazı tipine düşer.
@@ -50,6 +62,7 @@ Bu dosya, projeyi başka bir sohbette/hesapta sürdürecek kişi (veya yapay zek
 - Gerçek donanımda FPS ölçülmedi.
 
 ## Sonraki adım fikirleri
+- Space Apps'e göndermeden önce İngilizce demo sunumu herkese açık bir bağlantıya koymak (Google Drive veya bu GitHub deposu).
 - Uzaylıları başka Kaotik seviyelere de (ör. 10) daha seyrek eklemek; UFO türüne göre farklı renkli gemiler.
 - Kara delik seviyesine isteğe bağlı "mercek görüşü" ipucu.
 - **Gerçek veri modu**: NASA/IPAC IRSA'daki SPHEREx görüntülerinden (aynı bölgenin iki farklı tarihli görüntüsü) birkaç tanesini indirip `assets/` altına koyarak "Gerçek Gökyüzü" sekmesinde aynı İLERLEME çubuğu ve göz kırpma ile göstermek — jüri için güçlü bir artı olur.

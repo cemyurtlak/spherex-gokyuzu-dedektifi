@@ -9,6 +9,8 @@ NASA Space Apps Challenge 2026 · **Planet X and SPHEREx** görevi için hazırl
 **Tarayıcıda oyna:** https://cemyurtlak.github.io/spherex-gokyuzu-dedektifi/
 **Kaynak kod:** https://github.com/cemyurtlak/spherex-gokyuzu-dedektifi
 
+**Dil:** Oyun Türkçe ve İngilizcedir. Ana menüdeki veya görev haritasındaki **TR | EN** düğmesiyle değiştirilir; doğrudan İngilizce açmak için adres sonuna `?lang=en` eklenir.
+
 ## Hikâye
 
 Antalya'da 8. sınıf öğrencisi **{oyuncunun adı}** (varsayılan: Zirve), Saklıkent'teki gözlem kampında NASA SPHEREx ekibinden **Dr. Ada Kaya**'dan (kurgusal karakter) bir mesaj alır: "Gökyüzü Dedektifleri" ekibine katılması isteniyordur. Yardımcı robot **PİKSEL** ile birlikte 12 görevde gökyüzündeki değişen cisimleri bulur: önce asteroitler, kuyruklu yıldızlar ve süpernovalar; sonra varsayımsal **Planet X**, **Gezegen Y**, görünmeyen bir **ilkel kara delik** ve son görevde uzaylı gözcülerin engellemeye çalıştığı **Tyche**.
@@ -58,6 +60,7 @@ Kurulum gerekmez. `index.html` dosyasına çift tıkla (Chrome / Edge önerilir)
 İlerleme (yıldızlar, koleksiyon, rozetler) tarayıcının yerel belleğinde saklanır. "Nasıl Oynanır?" penceresinden sıfırlanabilir.
 
 **Sunum / jüri için adres parametreleri:**
+- `index.html?lang=en` → oyunu İngilizce açar (`?lang=tr` → Türkçe)
 - `index.html?hepsi=1` → tüm görevlerin kilidini açar
 - `index.html?gizli=1` → gizli cisimlerin hepsini, uygun seviyelerde kesin olarak çıkarır
 - İkisi birlikte: `index.html?hepsi=1&gizli=1`
@@ -69,12 +72,21 @@ Kurulum gerekmez. `index.html` dosyasına çift tıkla (Chrome / Edge önerilir)
 ├─ index.html              Sayfa iskeleti, tüm ekranlar ve pencereler
 ├─ css/style.css           Tüm görünüm (HUD, kartlar, animasyonlar)
 ├─ vendor/three.min.js     Three.js r149 (yerel kopya)
-├─ js/data.js              Hikâye, seviyeler, cisim kataloğu, nadirlik, rozetler  ← içerik buradan düzenlenir
+├─ js/data.js              Hikâye, seviyeler, cisim kataloğu, nadirlik, rozetler (Türkçe)  ← içerik buradan düzenlenir
+├─ js/data_en.js           Aynı içeriğin İngilizcesi
+├─ js/i18n.js              Dil desteği: arayüz sözlüğü (TR/EN), dil değiştirme
 ├─ js/audio.js             WebAudio ile üretilen ses efektleri (dosya gerekmez)
 ├─ js/sky.js               Gökyüzü sahnesi: yıldızlar, tarama ışını, zaman/bant, seçme, kilit çizgileri, kara delik merceği, uzaylılar, büyüteç
 ├─ js/cutscene.js          Ara sahne animasyonları (Dünya, SPHEREx, kuyruklu yıldız, süpernova, Kuiper, Planet X, Sedna, Gezegen Y, kara delik, Tyche+UFO, final)
 ├─ js/ui.js                İkonlar, avatarlar, diyalog, uplink, keşif kartı, koleksiyon, kayıt
 ├─ js/main.js              Oyun akışı, girdi, seviye döngüsü
+├─ sunum/                  Space Apps sunumları ve konuşma metinleri
+│   ├─ Demo Presentation (EN).pptx   7 slayt — Space Apps'e gönderilecek (İngilizce zorunlu)
+│   ├─ Demo Sunum.pptx               Aynı sunumun Türkçesi
+│   ├─ Full Presentation (EN).pptx   17 slaytlık tam sunum (İngilizce)
+│   ├─ Tam Sunum.pptx                17 slaytlık tam sunum (Türkçe)
+│   ├─ Speaker Script (EN).pdf       Her slaytta ne söyleneceği (İngilizce)
+│   └─ Konusma Metni (TR).pdf        Her slaytta ne söyleneceği (Türkçe)
 ├─ README.md               Bu dosya
 ├─ GELISTIRME_GUNLUGU.md   Aşama aşama geliştirme kaydı
 └─ DEVAM_NOTLARI.md        Kurallar, teknik kararlar, kod haritası, sonraki adımlar

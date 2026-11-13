@@ -4,6 +4,32 @@
 
 ---
 
+## Aşama 4 — Türkçe/İngilizce dil seçeneği, Space Apps sunumları ve konuşma metinleri
+**Tarih:** 13.11.2026
+
+**İstek:**
+- "SphereX" takımı için NASA Space Apps Challenge kurallarına uygun sunum; sayfa sınırına uyulsun, NASA kaynaklarına dayansın, yanlış bilgi olmasın; gerekli yerlere ekran görüntüleri eklensin.
+- Sunumlar Türkçe ve İngilizce ayrı ayrı olsun (sunum klasöründeki "Demo Sunum" ve "Tam Sunum" dosyaları çoğaltılarak).
+- Oyuna Türkçe/İngilizce dil seçeneği eklensin; sunumda da yer alsın; GitHub güncellensin.
+- Sunumda nerede ne söyleneceğini anlatan ayrı PDF (Türkçe ve İngilizce).
+
+**Yapılanlar:**
+- Oyun: `js/i18n.js` (arayüz sözlüğü, `SX.t()`, `SX.dilAyarla()`) ve `js/data_en.js` (hikâye, 12 görev, 17 cisim, sorular, rozetlerin İngilizcesi) eklendi. Ana menüde ve görev haritasında **TR | EN** düğmesi. Seçim tarayıcıda saklanır; `?lang=en` / `?lang=tr` adres parametresi önceliklidir. Kodda sabit Türkçe metin kalmadı.
+- Space Apps kuralları resmî "Project Submission Guide" sayfasından kontrol edildi: demo sunumu **en fazla 7 slayt (başlık dâhil)**, **İngilizce**, herkese açık bağlantı; takım adı, üye adları, seçilen görev; NASA verisi açıklaması; yapay zekâ kullanım beyanı; yapay zekâ ile üretilmiş görsellerde filigran; NASA logosu kullanılmaması.
+- Sunumlar (`sunum/` klasörü): **Demo Sunum.pptx** (TR, 7 slayt), **Demo Presentation (EN).pptx** (7 slayt — Space Apps'e gönderilecek), **Tam Sunum.pptx** (TR, 17 slayt), **Full Presentation (EN).pptx** (17 slayt). Her slaytta konuşma notu var.
+- Konuşma metinleri: **Konusma Metni (TR).pdf** ve **Speaker Script (EN).pdf** (iki sunumun her slaytı için ne söyleneceği, hedef süre, konuşmacı satırı).
+- 15'er oyun içi ekran görüntüsü (TR ve EN) alındı; hepsinde "Yapay zekâ destekli oyun · Claude (Anthropic)" filigranı var. Oyuna giden QR kod eklendi.
+- Bilgiler NASA JPL (SPHEREx ilk harita, 18.12.2025), Caltech SPHEREx (fırlatma 11.03.2025), NASA Science SPHEREx blogu (3I/ATLAS, 04.02.2026), NASA Science Planet X sayfası ve IRSA SPHEREx Quick Release açıklamasından doğrulandı.
+
+**Değişen / eklenen dosyalar:** index.html, css/style.css, js/data.js, js/data_en.js (yeni), js/i18n.js (yeni), js/main.js, js/sky.js, js/ui.js, sunum/* (4 pptx + 2 pdf), README.md, GELISTIRME_GUNLUGU.md, DEVAM_NOTLARI.md
+
+**Test durumu:**
+- Headless Chromium'da iki dilde tam akış (başlık → ara sahne → brifing → oyun → kilit → uplink → soru → keşif → sonuç → harita → koleksiyon → rozetler → kara delik → uzaylılar → büyüteç) çalıştırıldı; JavaScript hatası yok, İngilizcede Türkçe metin kalmadı.
+- 4 sunum dosyası doğrulama betiğinden geçti ve slayt slayt görsel olarak kontrol edildi.
+- Açık iş: sunumlardaki "[Takım üyelerinin adları]" yer tutucusu takım tarafından doldurulmalı.
+
+---
+
 ## Aşama 3 — GitHub'a yükleme ve GitHub Pages yayını
 **Tarih:** 13.11.2026
 
