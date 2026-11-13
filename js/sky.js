@@ -279,7 +279,7 @@ SX.Sky.prototype.kur = function (sev, secenek) {
     if (!yb) continue;
     var ob = this._obje('bilinen', 'asteroit', SX.CISIMLER.asteroit.profil, 1.1, 0.9);
     ob.durum = yb.yol.map(function (p) { return { x: p.x, y: p.y, b: 1, v: true }; });
-    ob.etiket = 'Bilinen: ' + kodlar[b % kodlar.length];
+    ob.etiket = SX.t('bilinen') + ': ' + kodlar[b % kodlar.length];
   }
 
   /* --- Değişen yıldızlar (yanıltıcı) --- */

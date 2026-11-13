@@ -429,9 +429,9 @@ SX.EK_ROZETLER = [
 
 /* ---------- Tarama tarihleri (her 6 ayda bir tüm gökyüzü) ---------- */
 SX.taramaEtiketi = function (i) {
-  var aylar = ['Mayıs', 'Kasım'];
+  var aylar = SX.t ? SX.t('aylar').split('|') : ['Mayıs', 'Kasım'];
   var yil = 2025 + Math.floor(i / 2);
-  return 'Tarama ' + (i + 1) + ' · ' + aylar[i % 2] + ' ' + yil;
+  return (SX.t ? SX.t('tarama') : 'Tarama') + ' ' + (i + 1) + ' · ' + aylar[i % 2] + ' ' + yil;
 };
 
 /* ---------- Hikâye diyalogları ----------

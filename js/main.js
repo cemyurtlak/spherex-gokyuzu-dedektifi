@@ -18,11 +18,13 @@
     sky.onUfoEylem = function (tur, ufo) { ufoEylem(tur, ufo); };
     window.addEventListener('resize', boyutla); boyutla();
     SX.kayitYukle();
+    SX.veriDiliUygula(); SX.htmlDiliUygula();
+    SX.onDilDegisti = dilDegisti;
     // eski kayıtlar: biten en yüksek görevin bir sonrakini aç (yeni seviyeler eklenince)
     SX.SEVIYELER.forEach(function (s) { if (SX.kayit.rozet['s' + s.no]) SX.kayit.acik = Math.max(SX.kayit.acik, Math.min(SX.SEVIYELER.length, s.no + 1)); });
     if (URL_P.get('hepsi') === '1') SX.kayit.acik = SX.SEVIYELER.length;
     $('#isim').value = SX.kayit.isim || 'Zirve';
-    if (SX.kayit.acik > 1 || Object.keys(SX.kayit.yildiz).length) $('#btn-basla').textContent = 'Devam Et';
+    baslaYazisi();
     cut.baslat('baslik'); mod = 'sahne';
     olaylar();
     var son = performance.now();
@@ -34,6 +36,15 @@
     }
     requestAnimationFrame(dongu);
     setTimeout(function () { $('#yukleniyor').classList.add('git'); }, 300);
+  }
+  function baslaYazisi() {
+    var devam = SX.kayit.acik > 1 || Object.keys(SX.kayit.yildiz).length;
+    $('#btn-basla').textContent = SX.t(devam ? 'devam_et' : 'basla');
+  }
+  function dilDegisti() {
+    baslaYazisi();
+    if ($('#ekran-harita').classList.contains('acik')) haritaGoster();
+    if ($('#koleksiyon').classList.contains('acik')) SX.UI.koleksiyonDoldur();
   }
   function boyutla() {
     var w = window.innerWidth, h = window.innerHeight;
@@ -52,11 +63,12 @@
     };
     $('#btn-koleksiyon').onclick = koleksiyonAc;
     $('#btn-hakkinda').onclick = function () { SX.Ses.baslat(); SX.UI.pencere('#hakkinda'); };
-    $('#harita-geri').onclick = function () { ekran('#ekran-baslik'); $('#btn-basla').textContent = 'Devam Et'; };
+    $('#harita-geri').onclick = function () { ekran('#ekran-baslik'); baslaYazisi(); };
+    document.querySelectorAll('[data-dil]').forEach(function (b) { b.onclick = function () { SX.Ses.baslat(); SX.Ses.tik(); SX.dilAyarla(b.getAttribute('data-dil')); }; });
     $('#harita-kol').onclick = koleksiyonAc;
     $('#btn-sifirla').onclick = function () {
-      SX.kayitSifirla(); SX.UI.bildir('İlerleme sıfırlandı.', 'altin'); SX.UI.pencere('#hakkinda', false);
-      $('#btn-basla').textContent = 'Göreve Başla';
+      SX.kayitSifirla(); SX.UI.bildir(SX.t('sifirlandi'), 'altin'); SX.UI.pencere('#hakkinda', false);
+      baslaYazisi();
     };
     document.querySelectorAll('[data-kapat]').forEach(function (b) { b.onclick = function () { SX.Ses.tik(); SX.UI.pencere(b.dataset.kapat, false); }; });
     document.querySelectorAll('.sekme').forEach(function (s) {
@@ -128,7 +140,7 @@
     mod = 'sahne'; if (cut.id !== 'baslik') cut.baslat('baslik');
     $('#hud').classList.remove('acik'); $('#sinematik').classList.remove('acik');
     ekran('#ekran-harita');
-    $('#harita-baslik').textContent = SX.kayit.isim + ' · Görevler';
+    $('#harita-baslik').textContent = SX.t('harita_baslik', { isim: SX.kayit.isim });
     var bul = Object.keys(SX.kayit.bulunan).length;
     $('#harita-kol-sayi').textContent = bul + '/' + SX.KOLEKSIYON_SIRASI.length;
     var html = '';
@@ -138,7 +150,7 @@
       var yz = ''; for (var k = 0; k < 3; k++) yz += '<i class="' + (k < y ? 'on' : '') + '"></i>';
       html += '<div class="dugum ' + (kilit ? 'kilitli' : '') + (tamam ? ' tamam' : '') + '" data-no="' + s.no + '" data-n="' + c.nadirlik + '" style="--nr:' + r.renk + ';animation-delay:' + (i * 0.06) + 's">' +
         '<img class="d-ikon" src="' + SX.UI.ikon(c.ikon) + '">' +
-        '<div class="d-no">GÖREV ' + s.no + '</div><div class="d-baslik">' + s.baslik + '</div><div class="d-alt">' + s.altBaslik + '</div>' +
+        '<div class="d-no">' + SX.t('gorev_k', { n: s.no }) + '</div><div class="d-baslik">' + s.baslik + '</div><div class="d-alt">' + s.altBaslik + '</div>' +
         '<div class="d-alt-satir"><span class="d-nadir">' + r.ad + '</span><div class="yildizlar">' + yz + '</div></div>' +
         (kilit ? '<div class="d-kilit">🔒</div>' : '') + '</div>';
     });
@@ -161,7 +173,7 @@
     oyundanCik();
     cut.baslat(sev.sahne); mod = 'sahne';
     var sn = $('#sinematik'); sn.classList.add('acik');
-    $('.bk-no').textContent = 'GÖREV ' + sev.no + ' / ' + SX.SEVIYELER.length;
+    $('.bk-no').textContent = SX.t('gorev_n', { n: sev.no, t: SX.SEVIYELER.length });
     $('.bk-baslik').textContent = sev.baslik;
     $('.bk-alt').textContent = sev.altBaslik;
     var bk = $('#bolum-karti'); bk.classList.add('acik');
@@ -180,11 +192,11 @@
     mod = 'oyun';
     hudKur();
     var c = SX.CISIMLER[sev.hedef], r = SX.RARITY[c.nadirlik];
-    $('#br-no').textContent = 'GÖREV ' + sev.no + ' · ' + sev.taramaSayisi + ' TARAMA';
+    $('#br-no').textContent = SX.t('gorev_tarama', { n: sev.no, k: sev.taramaSayisi });
     $('#br-baslik').textContent = sev.baslik;
     $('#br-gorev').textContent = sev.gorev;
     var h = $('#br-hedef'); h.style.setProperty('--nr', r.renk);
-    h.innerHTML = '<img src="' + SX.UI.ikon(c.ikon) + '"><div>Hedef nadirliği: <b>' + r.ad + '</b><br><small>Gölgedeki cismi bul ve koleksiyonuna ekle!</small></div>';
+    h.innerHTML = '<img src="' + SX.UI.ikon(c.ikon) + '"><div>' + SX.t('br_hedef', { r: r.ad }) + '</div>';
     SX.UI.pencere('#brifing');
     $('#br-basla').onclick = function () { SX.Ses.tik(); SX.UI.pencere('#brifing', false); };
   }
@@ -192,7 +204,7 @@
   function hudKur() {
     $('#hud').classList.add('acik');
     var c = SX.CISIMLER[sev.hedef], r = SX.RARITY[c.nadirlik];
-    $('#hud-no').textContent = 'GÖREV ' + sev.no + ' / ' + SX.SEVIYELER.length;
+    $('#hud-no').textContent = SX.t('gorev_n', { n: sev.no, t: SX.SEVIYELER.length });
     $('#hud-baslik').textContent = sev.baslik;
     var hd = $('#hud-hedef'); hd.style.setProperty('--nr', r.renk);
     hd.innerHTML = sev.gorev + ' <b>[' + r.ad + ']</b>';
@@ -200,7 +212,7 @@
     var tk = '';
     for (var i = 0; i < sev.taramaSayisi; i++) {
       var p = i / (sev.taramaSayisi - 1) * 100;
-      tk += '<div class="tik" style="left:' + p + '%"><em>' + (i + 1) + '. tarama</em></div>';
+      tk += '<div class="tik" style="left:' + p + '%"><em>' + SX.t('tik', { n: i + 1 }) + '</em></div>';
     }
     $('#zaman-tikler').innerHTML = tk;
     $('#band').value = sev.baslangicBandi;
@@ -224,7 +236,7 @@
     document.querySelectorAll('#zaman-tikler .tik').forEach(function (el, i) { el.classList.toggle('gecti', i <= sky.t + 0.0001); });
     var e0 = Math.floor(sky.t + 0.0001), f = sky.t - e0;
     $('#tarama-etiket').textContent = (f > 0.01 && e0 < sky.E - 1) ?
-      SX.taramaEtiketi(e0) + '  ➜  ' + SX.taramaEtiketi(e0 + 1).split(' · ')[0] + ' taranıyor %' + Math.round(f * 100) :
+      SX.t('taraniyor', { a: SX.taramaEtiketi(e0), b: SX.taramaEtiketi(e0 + 1).split(' · ')[0], p: Math.round(f * 100) }) :
       SX.taramaEtiketi(Math.round(sky.t));
     var now = performance.now();
     if (Math.abs(once - sky.t) > 0.002 && now - sonIsinSes > 90) { SX.Ses.isin(); sonIsinSes = now; }
@@ -234,19 +246,19 @@
     sky.ayarlaBand(l); $('#band').value = l;
     var no = Math.round((l - SX.BAND.min) / (SX.BAND.max - SX.BAND.min) * (SX.BAND.adet - 1)) + 1;
     $('#band-deger').textContent = l.toFixed(2) + ' µm';
-    $('#band-no').textContent = 'Bant ' + no + ' / ' + SX.BAND.adet;
+    $('#band-no').textContent = SX.t('bant') + ' ' + no + ' / ' + SX.BAND.adet;
   }
   function blinkDegistir() {
     SX.Ses.tik();
     sky.blink = !sky.blink; sky.blinkFaz = 1; sky.guncelleGorunum();
     $('#btn-blink').classList.toggle('acik', sky.blink);
     $('#blink-etiket').classList.toggle('acik', sky.blink);
-    if (sky.blink && Math.round(sky.t) === 0) SX.UI.bildir('Göz Kırpma için önce İLERLEME çubuğunu ileri kaydır.', 'ipucu');
+    if (sky.blink && Math.round(sky.t) === 0) SX.UI.bildir(SX.t('blink_once'), 'ipucu');
   }
   function buyutecDegistir() {
     SX.Ses.tik(); buyutec = !buyutec;
     $('#btn-buyutec').classList.toggle('acik', buyutec);
-    if (buyutec) SX.UI.bildir('🔍 <b>Büyüteç açık:</b> fareyi gökyüzünde gezdir. (L ile kapat)', 'ipucu');
+    if (buyutec) SX.UI.bildir(SX.t('buyutec_acik'), 'ipucu');
   }
   function buyutecGuncelle() {
     var b = $('#buyutec');
@@ -259,22 +271,22 @@
     SX.Ses.hata();
     if (tur === 'parazit') {
       $('#parazit').classList.add('acik'); sky.sarsinti = 4;
-      SX.UI.bildir('👽 <b>Parazit!</b> Uzaylılar sinyali bozuyor...', 'hata');
+      SX.UI.bildir(SX.t('u_parazit'), 'hata');
       setTimeout(function () { $('#parazit').classList.remove('acik'); }, 4000);
     } else if (tur === 'sahte') {
       sky.sahteEkle(3, ufo.to.x, ufo.to.y);
-      SX.UI.bildir('👽 <b>Uzaylılar sahte cisimler bıraktı!</b> Taramalar arasında rastgele zıplayanlara tıklama.', 'hata');
+      SX.UI.bildir(SX.t('u_sahte'), 'hata');
     } else if (tur === 'bant') {
       var yeni = sky.band + (Math.random() < 0.5 ? -1 : 1) * (1.2 + Math.random());
       if (yeni < SX.BAND.min + 0.2 || yeni > SX.BAND.max - 0.2) yeni = sky.band > 2.9 ? sky.band - 1.8 : sky.band + 1.8;
       bandAyarla(yeni); bantKilit = 3.5; $('#band').disabled = true;
-      SX.UI.bildir('👽 <b>Dalga boyu karıştırıldı!</b> Kaydırıcı 3 saniye kilitli.', 'hata');
+      SX.UI.bildir(SX.t('u_bant'), 'hata');
     } else if (tur === 'perde') {
       sky.perdeEkle(ufo.to.x, ufo.to.y, 6);
-      SX.UI.bildir('👽 <b>Uzaylılar bir bölgeyi kararttı!</b> Birkaç saniye bekle.', 'hata');
+      SX.UI.bildir(SX.t('u_sis'), 'hata');
     }
   }
-  function ipucu() { SX.Ses.tik(); SX.UI.bildir('<b>PİKSEL:</b> ' + sev.ipucu, 'ipucu'); }
+  function ipucu() { SX.Ses.tik(); SX.UI.bildir('<b>' + SX.t('piksel') + ':</b> ' + sev.ipucu, 'ipucu'); }
 
   function yildizSayisi() { return hata === 0 ? 3 : hata <= 2 ? 2 : 1; }
   function yildizGoster() {
@@ -296,7 +308,7 @@
     if (sky.blink) {
       var be = $('#blink-etiket');
       var gT = sky.blinkFaz === 0 ? 1 : Math.round(sky.t) + 1;
-      be.textContent = 'TARAMA ' + gT; be.classList.toggle('ilk', sky.blinkFaz === 0);
+      be.textContent = SX.t('blink_tarama', { n: gT }); be.classList.toggle('ilk', sky.blinkFaz === 0);
     }
     // uzaylılar (yalnızca uzayli: true seviyelerde)
     if (bantKilit > 0) { bantKilit -= dt; if (bantKilit <= 0) { $('#band').disabled = false; } }
@@ -306,7 +318,7 @@
         var turler = ['parazit', 'sahte', 'bant', 'perde'];
         sky.ufoBaslat(turler[Math.floor(Math.random() * turler.length)]);
         SX.Ses.ufo();
-        SX.UI.bildir('👽 <b>UZAYLI GEMİSİ!</b> Hemen üzerine tıkla ve kovala!', 'hata');
+        SX.UI.bildir(SX.t('u_geldi'), 'hata');
         ufoSayac = 9 + Math.random() * 7;
       }
     }
@@ -319,7 +331,7 @@
     an.querySelectorAll('.an-bar i').forEach(function (el, i) {
       el.classList.toggle('on', i < Math.max(seviye, titre)); el.classList.toggle('kirmizi', a.guc > 0.8);
     });
-    $('#an-durum').textContent = !a.var ? 'sinyal yok' : a.guc > 0.8 ? 'GÜÇLÜ SİNYAL!' : a.guc > 0.4 ? 'sinyal yaklaşıyor...' : 'zayıf bilinmeyen sinyal';
+    $('#an-durum').textContent = SX.t(!a.var ? 'an_yok' : a.guc > 0.8 ? 'an_guclu' : a.guc > 0.4 ? 'an_yakin' : 'an_zayif');
   }
 
   function etiketGuncelle() {
@@ -361,29 +373,29 @@
       r.obje.bulundu = true; mesgul = true;
       var gc = SX.CISIMLER[r.obje.id];
       SX.Ses.kilit();
-      SX.UI.bildir('<b>⚠ ' + SX.RARITY[gc.nadirlik].ad.toUpperCase() + ' SİNYAL!</b> Bilinmeyen bir cisme kilitlenildi...', 'altin');
+      SX.UI.bildir(SX.t('gizli_sinyal', { r: SX.RARITY[gc.nadirlik].ad.toLocaleUpperCase(SX.dil) }), 'altin');
       sky.kilitlen(r.obje, SX.RARITY[gc.nadirlik].renk, function () {
         r.obje.etiketGoster = true;
         SX.UI.uplink(r.obje.id, function () { gizliKesif(r.obje.id); });
       });
     } else if (r.tur === 'ufo') {
       sky.ufoKovala(); SX.Ses.kilit();
-      var m0 = '👽 <b>Uzaylı kovalandı!</b>';
-      if (hata > 0) { hata--; yildizGoster(); m0 += ' Ödül: bir hatan silindi.'; }
+      var m0 = SX.t('u_kovalandi');
+      if (hata > 0) { hata--; yildizGoster(); m0 += SX.t('u_odul'); }
       SX.UI.bildir(m0, 'altin');
       if (!SX.kayit.bulunan.ufo) { mesgul = true; setTimeout(function () { SX.UI.uplink('ufo', function () { gizliKesif('ufo'); }); }, 700); }
     } else if (r.tur === 'bos') {
       sky.ping(r.x, r.y);
     } else {
       hata++; yildizGoster(); SX.Ses.hata(); sky.hataIsareti(r.x, r.y);
-      var m = r.tur === 'sahte' ? '<b>👽 Uzaylı tuzağı!</b> Bu sahte cisim taramalar arasında rastgele zıplıyor. Gerçek değil!' :
-              r.tur === 'degisen' ? '<b>Değişen yıldız!</b> Parlaklığı değişiyor ama hep aynı yerde ve ilk taramadan beri orada. Yeni değil.' :
-              r.tur === 'bilinen' ? '<b>Bu zaten katalogda:</b> ' + r.obje.etiket + '. NASA bunu biliyor — yeni olanı bul!' :
-              '<b>Sabit yıldız.</b> Tüm taramalarda aynı yerde duruyor.';
+      var m = r.tur === 'sahte' ? SX.t('m_sahte') :
+              r.tur === 'degisen' ? SX.t('m_degisen') :
+              r.tur === 'bilinen' ? SX.t('m_bilinen', { e: r.obje.etiket }) :
+              SX.t('m_sabit');
       SX.UI.bildir(m, 'hata');
       document.querySelector('.hud-alt').classList.add('salla');
       setTimeout(function () { document.querySelector('.hud-alt').classList.remove('salla'); }, 300);
-      if (hata === 3) setTimeout(function () { SX.UI.bildir('<b>PİKSEL:</b> Zorlandın mı? ' + sev.ipucu, 'ipucu'); }, 900);
+      if (hata === 3) setTimeout(function () { SX.UI.bildir('<b>' + SX.t('piksel') + ':</b> ' + SX.t('zorlandin') + sev.ipucu, 'ipucu'); }, 900);
     }
   }
 
@@ -400,11 +412,11 @@
         if (i === s.dogru) {
           SX.Ses.kilit(); b.classList.add('dogru');
           kap.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
-          ac.className = 'acik iyi'; ac.innerHTML = '<b>Doğru!</b> ' + s.aciklama;
+          ac.className = 'acik iyi'; ac.innerHTML = '<b>' + SX.t('dogru') + '</b> ' + s.aciklama;
           dv.style.display = 'inline-block';
         } else {
           SX.Ses.hata(); b.classList.add('yanlis'); b.disabled = true; hata++; yildizGoster();
-          ac.className = 'acik hata'; ac.innerHTML = '<b>Bu değil.</b> Cismin nasıl davrandığını düşün: hareket ediyor mu, hangi dalga boyunda görünüyor? Tekrar dene!';
+          ac.className = 'acik hata'; ac.innerHTML = SX.t('yanlis');
         }
       };
       kap.appendChild(b);
@@ -420,10 +432,10 @@
   function metaRozetler() {
     var k = SX.kayit, yeni = [];
     var hepsi3 = SX.SEVIYELER.every(function (s) { return k.yildiz[s.no] === 3; });
-    if (hepsi3 && !k.rozet.r_kusursuz) { k.rozet.r_kusursuz = true; yeni.push('Kusursuz Göz'); }
+    if (hepsi3 && !k.rozet.r_kusursuz) { k.rozet.r_kusursuz = true; yeni.push(SX.EK_ROZETLER.filter(function (e) { return e.id === 'r_kusursuz'; })[0].ad); }
     var tam = SX.KOLEKSIYON_SIRASI.every(function (id) { return k.bulunan[id]; });
-    if (tam && !k.rozet.r_tam) { k.rozet.r_tam = true; yeni.push('SPHEREx Ustası'); }
-    yeni.forEach(function (a, i) { setTimeout(function () { SX.UI.bildir('🏅 <b>Yeni rozet:</b> ' + a, 'altin'); SX.Ses.basari('kaotik'); }, 600 + i * 1200); });
+    if (tam && !k.rozet.r_tam) { k.rozet.r_tam = true; yeni.push(SX.EK_ROZETLER.filter(function (e) { return e.id === 'r_tam'; })[0].ad); }
+    yeni.forEach(function (a, i) { setTimeout(function () { SX.UI.bildir('🏅 <b>' + SX.t('yeni_rozet') + ':</b> ' + a, 'altin'); SX.Ses.basari('kaotik'); }, 600 + i * 1200); });
   }
 
   function gizliKesif(id) {
@@ -444,17 +456,17 @@
     metaRozetler();
     SX.kayitSakla();
     var c = SX.CISIMLER[sev.hedef], r = SX.RARITY[c.nadirlik];
-    $('#sn-no').textContent = 'GÖREV ' + no + ' TAMAMLANDI';
+    $('#sn-no').textContent = SX.t('gorev_bitti', { n: no });
     $('#sn-baslik').textContent = sev.baslik;
     var ys = document.querySelectorAll('#sn-yildiz i');
     ys.forEach(function (el) { el.classList.remove('on'); });
     ys.forEach(function (el, i) { if (i < y) setTimeout(function () { el.classList.add('on'); SX.Ses._ton(660 + i * 220, 0.2, 'triangle', 0.12); }, 400 + i * 350); });
     $('#sn-rozet').innerHTML = '<div class="rozet-mini" style="--nr:' + r.renk + '"><img src="' + SX.UI.ikon(c.ikon) + '"></div><div><b style="color:' + r.renk + '">' + sev.rozet.ad + '</b><br><span style="color:#8fa3c4;font-size:13px">' + sev.rozet.aciklama + '</span></div>';
     $('#sn-avatar').innerHTML = SX.UI.avatar('ada');
-    $('#sn-metin').textContent = SX.isimle(SX.BITIS_SOZU[no]) + (y < 3 ? ' (3 yıldız için yanlış tıklama yapmadan bul!)' : ' Kusursuz — 3 yıldız!');
+    $('#sn-metin').textContent = SX.isimle(SX.BITIS_SOZU[no]) + (y < 3 ? SX.t('sn_eksik') : SX.t('sn_tam'));
     var snr = $('#sn-sonraki');
     var sonSeviye = no === SX.SEVIYELER.length;
-    snr.textContent = sonSeviye ? 'Finali İzle' : 'Sonraki Görev';
+    snr.textContent = sonSeviye ? SX.t('final_izle') : SX.t('sonraki');
     snr.onclick = function () { SX.Ses.tik(); SX.UI.pencere('#sonuc', false); if (sonSeviye) finalOynat(); else seviyeBaslat(no + 1); };
     $('#sn-tekrar').onclick = function () { SX.Ses.tik(); SX.UI.pencere('#sonuc', false); seviyeBaslat(no); };
     $('#sn-harita').onclick = function () { SX.Ses.tik(); SX.UI.pencere('#sonuc', false); oyundanCik(); haritaGoster(); };
@@ -466,7 +478,7 @@
     oyundanCik(); $('#hud').classList.remove('acik');
     cut.baslat('final'); mod = 'sahne';
     $('#sinematik').classList.add('acik');
-    $('.bk-no').textContent = 'GÖREV TAMAMLANDI'; $('.bk-baslik').textContent = 'SPHEREx Ustası'; $('.bk-alt').textContent = SX.kayit.isim + ', Gökyüzü Dedektifi';
+    $('.bk-no').textContent = SX.t('gorev_tamam_ust'); $('.bk-baslik').textContent = SX.EK_ROZETLER.filter(function (e) { return e.id === 'r_tam'; })[0].ad; $('.bk-alt').textContent = SX.t('final_alt', { isim: SX.kayit.isim });
     $('#bolum-karti').classList.add('acik'); SX.Ses.basari('kaotik');
     setTimeout(function () {
       $('#bolum-karti').classList.remove('acik');

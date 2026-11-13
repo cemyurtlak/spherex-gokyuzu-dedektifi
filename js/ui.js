@@ -202,19 +202,19 @@ SX.UI.uplink = function (cisimId, bitince) {
   var c = SX.CISIMLER[cisimId], r = SX.RARITY[c.nadirlik];
   var p = $('#uplink'); p.style.setProperty('--nr', r.renk);
   $('#ul-ikon').src = SX.UI.ikon(c.ikon);
-  $('#ul-durum').textContent = 'Veri NASA\'ya gönderiliyor...';
+  $('#ul-durum').textContent = SX.t('ul_gonder');
   var bar = $('#ul-bar'), yuz = $('#ul-yuzde'), log = $('#ul-log');
-  var satirlar = ['Konum ölçülüyor (RA/Dec)...', 'Tarama karşılaştırması paketleniyor...', '102 bant parlaklık verisi ekleniyor...', 'JPL / IRSA sunucusuna bağlanılıyor...', 'Gönderim tamamlandı ✓'];
+  var satirlar = SX.t('ul_log').split('|');
   log.innerHTML = '';
   p.classList.add('acik'); SX.Ses.uplink();
   var t0 = performance.now(), sure = 2600, son = -1;
   function adim(now) {
     var k = Math.min(1, (now - t0) / sure);
-    bar.style.width = (k * 100).toFixed(0) + '%'; yuz.textContent = '%' + (k * 100).toFixed(0);
+    bar.style.width = (k * 100).toFixed(0) + '%'; yuz.textContent = SX.dil === 'en' ? (k * 100).toFixed(0) + '%' : '%' + (k * 100).toFixed(0);
     var s = Math.min(satirlar.length - 1, Math.floor(k * satirlar.length));
     while (son < s) { son++; var d = document.createElement('div'); d.textContent = '> ' + satirlar[son]; log.appendChild(d); }
     if (k < 1) requestAnimationFrame(adim);
-    else { $('#ul-durum').textContent = 'Veri NASA\'ya ulaştı!'; setTimeout(function () { p.classList.remove('acik'); bitince && bitince(); }, 700); }
+    else { $('#ul-durum').textContent = SX.t('ul_ulasti'); setTimeout(function () { p.classList.remove('acik'); bitince && bitince(); }, 700); }
   }
   requestAnimationFrame(adim);
 };
@@ -230,7 +230,7 @@ SX.UI.kesifKarti = function (cisimId, ekRozet, bitince) {
   var img = $('#ks-ikon'); img.src = SX.UI.ikon(c.ikon);
   var kart = $('#ks-kart'); kart.classList.remove('acildi'); void kart.offsetWidth;
   $('#ks-bilgi').innerHTML = c.bilgiler.map(function (b) { return '<li>' + b + '</li>'; }).join('');
-  $('#ks-rozet').innerHTML = ekRozet ? ('<div class="rozet-mini" style="--nr:' + r.renk + '"><img src="' + SX.UI.ikon(c.ikon) + '"></div><div><b>Yeni rozet: ' + ekRozet.ad + '</b><br><span>' + ekRozet.aciklama + '</span></div>') : '';
+  $('#ks-rozet').innerHTML = ekRozet ? ('<div class="rozet-mini" style="--nr:' + r.renk + '"><img src="' + SX.UI.ikon(c.ikon) + '"></div><div><b>' + SX.t('yeni_rozet') + ': ' + ekRozet.ad + '</b><br><span>' + ekRozet.aciklama + '</span></div>') : '';
   p.classList.add('acik');
   setTimeout(function () { kart.classList.add('acildi'); SX.Ses.basari(c.nadirlik); }, 650);
   $('#ks-tamam').onclick = function () { SX.Ses.tik(); p.classList.remove('acik'); bitince && bitince(); };
@@ -246,7 +246,7 @@ SX.UI.koleksiyonDoldur = function () {
       '<div class="kart-nadir">' + r.ad + '</div>' +
       '<img src="' + SX.UI.ikon(c.ikon) + '" alt="">' +
       '<div class="kart-ad">' + (var_ ? c.ad : '???') + '</div>' +
-      '<div class="kart-alt">' + (var_ ? c.kisa : (c.gizli ? 'Gizli cisim — bir seviyede saklanıyor' : 'Görevde keşfedilecek')) + '</div></div>';
+      '<div class="kart-alt">' + (var_ ? c.kisa : (c.gizli ? SX.t('kol_gizli') : SX.t('kol_gorevde'))) + '</div></div>';
   });
   $('#kol-izgara').innerHTML = html;
   $('#kol-sayac').textContent = adet + ' / ' + SX.KOLEKSIYON_SIRASI.length;
@@ -254,17 +254,17 @@ SX.UI.koleksiyonDoldur = function () {
   var rh = '';
   SX.SEVIYELER.forEach(function (s) {
     var c = SX.CISIMLER[s.hedef], r = SX.RARITY[c.nadirlik], var_ = !!k.rozet['s' + s.no];
-    rh += SX.UI._rozetHTML(s.rozet.ad, s.rozet.aciklama, c.ikon, r, var_, 'Seviye ' + s.no);
+    rh += SX.UI._rozetHTML(s.rozet.ad, s.rozet.aciklama, c.ikon, r, var_, SX.t('seviye', { n: s.no }));
   });
   SX.EK_ROZETLER.forEach(function (e) {
     var var_ = !!k.rozet[e.id];
     var ik = e.cisim ? SX.CISIMLER[e.cisim].ikon : (e.ozel === 'tam' ? 'supernova' : 'mikromercek');
     var r = e.cisim ? SX.RARITY[SX.CISIMLER[e.cisim].nadirlik] : SX.RARITY[e.ozel === 'tam' ? 'kaotik' : 'efsanevi'];
-    rh += SX.UI._rozetHTML(e.ad, e.aciklama, ik, r, var_, e.cisim ? 'Gizli' : 'Başarı');
+    rh += SX.UI._rozetHTML(e.ad, e.aciklama, ik, r, var_, e.cisim ? SX.t('gizli') : SX.t('basari'));
   });
   $('#rozet-izgara').innerHTML = rh;
 };
 SX.UI._rozetHTML = function (ad, aciklama, ikon, r, var_, ust) {
   return '<div class="rozet ' + (var_ ? 'var' : 'yok') + '" style="--nr:' + r.renk + '"><div class="rozet-alti"><img src="' + SX.UI.ikon(ikon) + '"></div>' +
-    '<div class="rozet-ust">' + ust + ' · ' + r.ad + '</div><div class="rozet-ad">' + (var_ ? ad : 'Kilitli') + '</div><div class="rozet-ac">' + aciklama + '</div></div>';
+    '<div class="rozet-ust">' + ust + ' · ' + r.ad + '</div><div class="rozet-ad">' + (var_ ? ad : SX.t('kilitli')) + '</div><div class="rozet-ac">' + aciklama + '</div></div>';
 };
