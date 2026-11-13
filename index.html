@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPHEREx: Gökyüzü Dedektifi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Exo+2:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="sahne"></div>
+<div id="etiketler"></div>
+<div id="buyutec"><i></i></div>
+<div id="parazit"></div>
+<div id="sinematik"><div class="bant ust"></div><div class="bant alt"></div>
+  <div id="bolum-karti"><div class="bk-no"></div><div class="bk-baslik"></div><div class="bk-alt"></div></div>
+</div>
+
+<!-- ================= BAŞLIK EKRANI ================= -->
+<section id="ekran-baslik" class="ekran acik">
+  <div class="baslik-ic">
+    <div class="ust-etiket">NASA SPACE APPS CHALLENGE 2026 · PLANET X AND SPHEREx</div>
+    <h1>SPHEREx<span>Gökyüzü Dedektifi</span></h1>
+    <p class="slogan">Planet X'in izinde · 102 renkte gökyüzü · 12 görev · 17 gizemli cisim · uzaylılar!</p>
+    <div class="isim-kutu">
+      <label for="isim">Dedektif adın</label>
+      <input id="isim" maxlength="16" value="Zirve" autocomplete="off">
+    </div>
+    <div class="dugmeler">
+      <button id="btn-basla" class="btn ana">Göreve Başla</button>
+      <button id="btn-koleksiyon" class="btn">Koleksiyon</button>
+      <button id="btn-hakkinda" class="btn">Nasıl Oynanır?</button>
+    </div>
+    <div class="nadir-serit">
+      <span style="--nr:#b8c4d6">Normal</span><span style="--nr:#4fc3f7">Nadir</span><span style="--nr:#b388ff">Destansı</span><span style="--nr:#ffb300">Efsanevi</span><span style="--nr:#00e5a0" class="g">Gizemli</span><span style="--nr:#ff1f4b" class="k">Kaotik</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GÖREV HARİTASI ================= -->
+<section id="ekran-harita" class="ekran">
+  <div class="harita-ust">
+    <button id="harita-geri" class="btn kucuk">‹ Ana Menü</button>
+    <div><div class="ust-etiket">GÖKYÜZÜ DEDEKTİFLERİ · GÖREV KONTROL</div><h2 id="harita-baslik">Görevler</h2></div>
+    <button id="harita-kol" class="btn kucuk">Koleksiyon <b id="harita-kol-sayi"></b></button>
+  </div>
+  <div id="harita-yol"></div>
+</section>
+
+<!-- ================= OYUN HUD ================= -->
+<section id="hud">
+  <div class="hud-ust">
+    <div class="gorev-kutu">
+      <div class="gk-no" id="hud-no">SEVİYE 1</div>
+      <div class="gk-baslik" id="hud-baslik">İlk Sinyal</div>
+      <div class="gk-hedef" id="hud-hedef"></div>
+    </div>
+    <div class="hud-orta">
+      <div id="blink-etiket">TARAMA 1</div>
+      <div id="hud-yildiz" class="yildizlar"><i></i><i></i><i></i></div>
+    </div>
+    <div class="arac-cubugu">
+      <button class="arac" id="btn-ipucu" title="İpucu (H)">💡<span>İpucu</span></button>
+      <button class="arac" id="btn-kol" title="Koleksiyon">🗂️<span>Koleksiyon</span></button>
+      <button class="arac" id="btn-ses" title="Ses">🔊<span>Ses</span></button>
+      <button class="arac" id="btn-menu" title="Görevler">🛰️<span>Görevler</span></button>
+    </div>
+  </div>
+  <div id="anomali" class="pasif"><div class="an-baslik">ANOMALİ DEDEKTÖRÜ</div><div class="an-bar"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="an-durum" id="an-durum">sinyal yok</div></div>
+  <div class="zoom-kutu">
+    <button class="arac" id="btn-yak" title="Yakınlaştır (+)">＋</button>
+    <button class="arac" id="btn-uzak" title="Uzaklaştır (-)">－</button>
+    <button class="arac" id="btn-sifir" title="Tüm alan">⤢</button>
+  </div>
+  <div class="hud-alt">
+    <div class="band-satir">
+      <div class="band-etiket">DALGA BOYU<b id="band-deger">1.60 µm</b><small id="band-no">Bant 23 / 102</small></div>
+      <div class="band-kaydirici"><input type="range" id="band" min="0.75" max="5" step="0.042" value="1.6"><div class="band-isaret"><span>0.75 µm</span><span>CO₂ 4.3</span><span>5.0 µm</span></div></div>
+      <button id="btn-blink" class="btn kucuk blink" title="Göz Kırpma (B)">◐ Göz Kırpma</button>
+      <button id="btn-buyutec" class="btn kucuk blink" title="Büyüteç (L)">🔍 Büyüteç</button>
+    </div>
+    <div class="zaman-satir">
+      <button id="btn-oynat" class="oynat" title="Oynat">▶</button>
+      <div class="zaman-kutu">
+        <div class="zaman-baslik"><span>İLERLEME</span><b id="tarama-etiket">Tarama 1 · Mayıs 2025</b></div>
+        <div class="zaman-izi"><div id="zaman-dolu"></div><div id="zaman-tikler"></div><input type="range" id="zaman" min="0" max="3" step="0.001" value="0"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DİYALOG ================= -->
+<div id="diyalog">
+  <div class="dg-avatar" id="dg-avatar"></div>
+  <div class="dg-ic">
+    <div class="dg-ust"><b id="dg-ad"></b><span id="dg-rol"></span><em id="dg-sayac"></em></div>
+    <div id="dg-metin"></div>
+    <div class="dg-alt"><span>Devam: tıkla / Boşluk</span><button id="dg-atla">Atla ⏭</button></div>
+  </div>
+</div>
+
+<div id="bildirimler"></div>
+
+<!-- ================= PENCERELER ================= -->
+<div id="brifing" class="pencere">
+  <div class="pc-kutu">
+    <div class="ust-etiket" id="br-no">GÖREV 1</div>
+    <h2 id="br-baslik"></h2>
+    <p id="br-gorev"></p>
+    <div class="br-hedef" id="br-hedef"></div>
+    <ul class="br-liste">
+      <li><b>İLERLEME çubuğunu</b> sağa kaydır: tarama ışını ilerledikçe yeni tarama gökyüzünü günceller.</li>
+      <li><b>Dalga boyu</b> kaydırıcısıyla 102 kızılötesi renk arasında geçiş yap — bazı cisimler sadece belirli renklerde görünür.</li>
+      <li><b>Göz Kırpma</b> ilk tarama ile şimdiki taramayı art arda gösterir. <b>Büyüteç (L)</b> imlecin altını 3 kat büyütür. Fare tekerleği: yakınlaştır, sürükle: gez.</li>
+      <li>Yeni ortaya çıkan ya da yer değiştiren cismi bulunca <b>üzerine tıkla</b>. Yanlış tıklamalar yıldız kaybettirir.</li>
+    </ul>
+    <button class="btn ana" id="br-basla">Taramaya Başla</button>
+  </div>
+</div>
+
+<div id="uplink" class="pencere">
+  <div class="ul-kutu">
+    <div class="ul-anten"><div class="dalga"></div><div class="dalga d2"></div><div class="dalga d3"></div><img id="ul-ikon" alt=""></div>
+    <div class="ul-durum" id="ul-durum">Veri NASA'ya gönderiliyor...</div>
+    <div class="ul-bar"><div id="ul-bar"></div></div>
+    <div class="ul-yuzde" id="ul-yuzde">%0</div>
+    <div class="ul-log" id="ul-log"></div>
+  </div>
+</div>
+
+<div id="soru" class="pencere">
+  <div class="pc-kutu">
+    <div class="ust-etiket">TANIMLAMA · NASA SORUYOR</div>
+    <h2 id="sr-metin"></h2>
+    <div id="sr-secenekler"></div>
+    <div id="sr-aciklama"></div>
+    <button class="btn ana" id="sr-devam">Devam</button>
+  </div>
+</div>
+
+<div id="kesif" class="pencere">
+  <div class="ks-kutu">
+    <div class="ks-isinlar"></div>
+    <div class="ust-etiket">YENİ KEŞİF · KOLEKSİYONA EKLENDİ</div>
+    <div id="ks-kart"><div class="ks-nadirlik" id="ks-nadirlik"></div><div class="ks-resim"><img id="ks-ikon" alt=""><div class="ks-tarama"></div></div><div class="ks-ad" id="ks-ad"></div><div class="ks-kisa" id="ks-kisa"></div></div>
+    <ul id="ks-bilgi"></ul>
+    <div id="ks-rozet"></div>
+    <button class="btn ana" id="ks-tamam">Harika!</button>
+  </div>
+</div>
+
+<div id="sonuc" class="pencere">
+  <div class="pc-kutu orta">
+    <div class="ust-etiket" id="sn-no">GÖREV TAMAMLANDI</div>
+    <h2 id="sn-baslik"></h2>
+    <div class="yildizlar buyuk" id="sn-yildiz"><i></i><i></i><i></i></div>
+    <div class="sn-rozet" id="sn-rozet"></div>
+    <div class="sn-soz"><div class="dg-avatar kucuk" id="sn-avatar"></div><p id="sn-metin"></p></div>
+    <div class="dugmeler">
+      <button class="btn" id="sn-tekrar">Tekrar Oyna</button>
+      <button class="btn" id="sn-harita">Görevler</button>
+      <button class="btn ana" id="sn-sonraki">Sonraki Görev</button>
+    </div>
+  </div>
+</div>
+
+<div id="koleksiyon" class="pencere">
+  <div class="pc-kutu genis">
+    <div class="kol-ust">
+      <div><div class="ust-etiket">KOLEKSİYON <b id="kol-sayac"></b></div><h2>Keşif Kataloğu</h2></div>
+      <div class="sekmeler"><button class="sekme acik" data-s="kol-izgara">Cisimler</button><button class="sekme" data-s="rozet-izgara">Rozetler</button></div>
+      <button class="kapat" data-kapat="#koleksiyon">✕</button>
+    </div>
+    <div id="kol-izgara" class="izgara sekme-icerik acik"></div>
+    <div id="rozet-izgara" class="izgara rozetler sekme-icerik"></div>
+  </div>
+</div>
+
+<div id="hakkinda" class="pencere">
+  <div class="pc-kutu genis metin">
+    <button class="kapat" data-kapat="#hakkinda">✕</button>
+    <div class="ust-etiket">NASIL OYNANIR?</div>
+    <h2>Gökyüzü Dedektifi Rehberi</h2>
+    <div class="iki-sutun">
+      <div>
+        <h3>Görevin</h3>
+        <p>NASA'nın SPHEREx teleskobu 2025'ten beri tüm gökyüzünü her 6 ayda bir, 0.75–5.0 mikrometre arasındaki 102 kızılötesi renkte haritalıyor. Sen, bu görüntülerde değişen cisimleri bulan bir öğrenci dedektifsin.</p>
+        <h3>Kontroller</h3>
+        <ul>
+          <li><b>İLERLEME çubuğu</b> (← →): taramalar arasında zamanda ilerle. Tarama ışını geçtiği yeri yeni veriyle günceller.</li>
+          <li><b>Dalga boyu</b>: SPHEREx'in 102 rengi arasında geç.</li>
+          <li><b>Göz Kırpma</b> (B): 1930'da Pluto'yu bulan yöntem! İlk tarama ile şimdiki taramayı art arda gösterir.</li>
+          <li><b>Büyüteç</b> (L): imlecin altını 3 kat büyüten pencere.</li>
+          <li><b>Fare tekerleği</b> (+ −): yakınlaştır · <b>sürükle</b>: gez · <b>tıkla</b>: cismi seç.</li>
+          <li><b>Uzaylılar</b> (son görev): gemi gelince üzerine tıkla ve kovala; yoksa parazit yapar, sahte cisim bırakır, dalga boyunu değiştirir ya da bir bölgeyi karartır.</li>
+          <li><b>İpucu</b> (H): PİKSEL'den yardım al.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Nadirlik</h3>
+        <p><b style="color:#b8c4d6">Normal</b> · <b style="color:#4fc3f7">Nadir</b> · <b style="color:#b388ff">Destansı</b> · <b style="color:#ffb300">Efsanevi</b> · <b style="color:#00e5a0">Gizemli</b> · <b style="color:#ff1f4b">Kaotik</b></p>
+        <p>Gizemli ve Kaotik cisimler çok zordur: bazı seviyelerde rastgele saklanırlar, yalnızca <b>tek bir taramada</b> ve <b>dar bir dalga boyu aralığında</b> görünürler. <b>Anomali dedektörü</b> yanıp sönüyorsa o seviyede gizli bir cisim vardır; doğru bant ve doğru taramaya yaklaştıkça sinyal güçlenir.</p>
+        <h3>Gerçek mi?</h3>
+        <p>Oyundaki gökyüzü görüntüleri SPHEREx'in nasıl çalıştığını anlatmak için üretilmiş benzetimlerdir. Cisim bilgileri gerçek bilime dayanır. Planet X, Gezegen Y, ilkel kara delik ve Tyche gerçekte bulunamamış, tartışılan varsayımlardır; uzaylılar tamamen kurgusaldır. Gerçek SPHEREx verileri NASA/IPAC IRSA arşivinde herkese açıktır.</p>
+        <button class="btn kucuk tehlike" id="btn-sifirla">İlerlemeyi sıfırla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="yukleniyor"><div class="yk-halka"></div><div>Gökyüzü hazırlanıyor...</div></div>
+
+<script src="vendor/three.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/sky.js"></script>
+<script src="js/cutscene.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
